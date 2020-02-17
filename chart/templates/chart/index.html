@@ -1,0 +1,419 @@
+{% extends "chart/base.html" %}
+
+{% block extracss %}
+<style>
+.custom-radio label {
+  font-size: 12px;
+}
+#shown-chart {
+  border: solid 2px black;
+  position: relative;
+  padding: 0;
+  width: 1100px;
+}
+#obj {
+  width: 200px;
+  height: 206px;
+  border: solid 2px #000;
+  background-color: #fff;
+  cursor: move;
+  z-index: 99;
+  border-radius: 3%;
+  text-align: center;
+}
+#obj > p {
+  line-height: 50%;
+}
+#data-shown {
+  position:absolute;
+  top:55%;
+  right:2%;
+  /* width: 100px; */
+  height: 100px;
+  border: solid 1px #000;
+  background-color: #fff;
+  z-index: 98;
+}
+#data-shown > p {
+  line-height: 10%;
+}
+#chart-scale {
+  position:absolute;
+  top:2%;
+  left:10%;
+  z-index: 98;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-3 p-1">
+    <div class="input-group">
+      <input class="form-control" type="text" placeholder="Securities code / Company name" aria-label="Search">
+      <div class="input-group-append">
+        <span class="input-group-text" id="basic-text1"><i class="fas fa-search text-grey" aria-hidden="true"></i></span>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 p-1">
+    <select class="custom-select">
+      <option selected>company name</option>
+      <option value="1">1234/Nintendo</option>
+      <option value="2">Two</option>
+      <option value="3">Three</option>
+    </select>
+  </div>
+  <div class="col-md-3 p-1">
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#exampleModal">
+      technical
+    </button>
+  </div>
+  <div class="col-md-3 p-1">
+    <button id="simulation" type="button" class="btn btn-secondary float-lg-right">Start simulation</button>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-7 p-1">
+
+    <div class="row">
+      <div class="col-lg-1 col-2 pr-1">
+        <div class="custom-control custom-radio">
+          <input type="radio" id="customRadio1" name="customRadio" class="custom-control-input">
+          <label class="custom-control-label" for="customRadio1">5m</label>
+        </div>
+      </div>
+      <div class="col-lg-1 col-2 pr-1">
+        <div class="custom-control custom-radio">
+          <input type="radio" id="customRadio2" name="customRadio" class="custom-control-input">
+          <label class="custom-control-label" for="customRadio2">10m</label>
+        </div>
+      </div>
+      <div class="col-lg-1 col-2 pr-1">
+        <div class="custom-control custom-radio">
+          <input type="radio" id="customRadio3" name="customRadio" class="custom-control-input">
+          <label class="custom-control-label" for="customRadio3">15m</label>
+        </div>
+      </div>
+      <div class="col-lg-1 col-2 pr-1">
+        <div class="custom-control custom-radio">
+          <input type="radio" id="customRadio4" name="customRadio" class="custom-control-input">
+          <label class="custom-control-label" for="customRadio4">30m</label>
+        </div>
+      </div>
+      <div class="col-lg-1 col-2 pr-1">
+        <div class="custom-control custom-radio">
+          <input type="radio" id="customRadio5" name="customRadio" class="custom-control-input">
+          <label class="custom-control-label" for="customRadio5">1h</label>
+        </div>
+      </div>
+      <div class="col-lg-1 col-2 pr-1">
+        <div class="custom-control custom-radio">
+          <input type="radio" id="customRadio6" name="customRadio" class="custom-control-input">
+          <label class="custom-control-label" for="customRadio6">4h</label>
+        </div>
+      </div>
+      <div class="col-lg-1 col-2 pr-1">
+        <div class="custom-control custom-radio">
+          <input type="radio" id="customRadio7" name="customRadio" class="custom-control-input">
+          <label class="custom-control-label" for="customRadio7">day</label>
+        </div>
+      </div>
+      <div class="col-lg-1 col-2 pr-1">
+        <div class="custom-control custom-radio">
+          <input type="radio" id="customRadio8" name="customRadio" class="custom-control-input">
+          <label class="custom-control-label" for="customRadio8">week</label>
+        </div>
+      </div>
+      <div class="col-lg-1 col-2 pr-1">
+        <div class="custom-control custom-radio">
+          <input type="radio" id="customRadio9" name="customRadio" class="custom-control-input">
+          <label class="custom-control-label" for="customRadio9">month</label>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="col-md-5 p-1">
+    <div class="row">
+      <div class="col-md-6">
+        <input type="text" class="form-control" id="date_sample" placeholder="date">
+      </div>
+      <div class="col-md-6 p-1">
+        <div class="row">
+          <div class="col-3">
+            <div class="custom-control custom-radio">
+              <input type="radio" id="customRadio1" name="customRadio" class="custom-control-input">
+              <small><label class="custom-control-label" for="customRadio1">100</label></small>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="custom-control custom-radio">
+              <input type="radio" id="customRadio1" name="customRadio" class="custom-control-input">
+              <small><label class="custom-control-label" for="customRadio1">1000</label></small>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="custom-control custom-radio">
+              <input type="radio" id="customRadio1" name="customRadio" class="custom-control-input">
+              <small><label class="custom-control-label" for="customRadio1">10000</label></small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="simulated" class="d-none">
+  <div class="row">
+    <div class="col-lg-8">
+      <span class="text-primary">Trading period NNN Trade result NNNNNN yen Sales quantity: XX Buy quantity: XX</span>
+    </div>
+    <div class="col-lg-4">
+      <span class="float-lg-right">
+        <form class="form-inline">
+          <i class="fas fa-angle-double-left"></i><i class="fas fa-angle-left"></i>
+          Move <input type="text" class="form-control mx-2" value="1" style="width: 40px;">
+          <i class="fas fa-angle-right"></i><i class="fas fa-angle-double-right"></i>
+        </form>
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Technical settings</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="font-weight-bold">Main graph</p>
+        <ul class="list-unstyled">
+          <li class="py-1">
+            <div class="form-check form-check-inline">
+              <label class="form-check-label" for="inlineCheckbox1">Moving average line 1 &nbsp;&nbsp;</label>
+              <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+            </div>
+          </li>
+          <li class="py-1">
+            <div class="form-check form-check-inline">
+              <label class="form-check-label" for="inlineCheckbox1">Moving average line 2 &nbsp;&nbsp;</label>
+              <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
+            </div>
+          </li>
+          <li class="py-1">
+            <div class="form-check form-check-inline">
+              <label class="form-check-label" for="inlineCheckbox1">Moving average line 3 &nbsp;&nbsp;</label>
+              <input class="form-check-input" type="checkbox" id="inlineCheckbox3" value="option3">
+            </div>
+          </li>
+          <li class="py-1">
+            <div class="row">
+              <div class="col-md-4">
+                Bollinger band
+              </div>
+              <div class="col-md-4">
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="customCheck1">
+                  <label class="custom-control-label" for="customCheck1">1σ</label>
+                </div>
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="customCheck2">
+                  <label class="custom-control-label" for="customCheck1">2σ</label>
+                </div>
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="customCheck3">
+                  <label class="custom-control-label" for="customCheck1">3σ</label>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
+
+        <p class="font-weight-bold">Subgraph 1</p>
+        <div class="row mb-2">
+          <div class="col-md-2 pr-0">
+            <div class="custom-control custom-radio">
+              <input type="radio" id="customRadio2-1" name="customRadio2" class="custom-control-input">
+              <label class="custom-control-label" for="customRadio2-1">Volume</label>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="custom-control custom-radio">
+              <input type="radio" id="customRadio2-2" name="customRadio2" class="custom-control-input">
+              <label class="custom-control-label" for="customRadio2-2">MACD</label>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="custom-control custom-radio">
+              <input type="radio" id="customRadio2-3" name="customRadio2" class="custom-control-input">
+              <label class="custom-control-label" for="customRadio2-3">RCI</label>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="custom-control custom-radio">
+              <input type="radio" id="customRadio2-4" name="customRadio2" class="custom-control-input">
+              <label class="custom-control-label" for="customRadio2-4">RSI</label>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="custom-control custom-radio">
+              <input type="radio" id="customRadio2-5" name="customRadio2" class="custom-control-input" checked>
+              <label class="custom-control-label" for="customRadio2-5">None</label>
+            </div>
+          </div>
+        </div>
+
+        <p class="font-weight-bold">Subgraph 2</p>
+        <div class="row mb-2">
+          <div class="col-md-2 pr-0">
+            <div class="custom-control custom-radio">
+              <input type="radio" id="customRadio3-1" name="customRadio3" class="custom-control-input">
+              <label class="custom-control-label" for="customRadio3-1">Volume</label>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="custom-control custom-radio">
+              <input type="radio" id="customRadio3-2" name="customRadio3" class="custom-control-input">
+              <label class="custom-control-label" for="customRadio3-2">MACD</label>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="custom-control custom-radio">
+              <input type="radio" id="customRadio3-3" name="customRadio3" class="custom-control-input">
+              <label class="custom-control-label" for="customRadio3-3">RCI</label>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="custom-control custom-radio">
+              <input type="radio" id="customRadio3-4" name="customRadio3" class="custom-control-input">
+              <label class="custom-control-label" for="customRadio3-4">RSI</label>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="custom-control custom-radio">
+              <input type="radio" id="customRadio3-5" name="customRadio3" class="custom-control-input" checked>
+              <label class="custom-control-label" for="customRadio3-5">None</label>
+            </div>
+          </div>
+        </div>
+
+        <p class="font-weight-bold">Subgraph 3</p>
+        <div class="row mb-2">
+          <div class="col-md-2 pr-0">
+            <div class="custom-control custom-radio">
+              <input type="radio" id="customRadio4-1" name="customRadio4" class="custom-control-input">
+              <label class="custom-control-label" for="customRadio4-1">Volume</label>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="custom-control custom-radio">
+              <input type="radio" id="customRadio4-2" name="customRadio4" class="custom-control-input">
+              <label class="custom-control-label" for="customRadio4-2">MACD</label>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="custom-control custom-radio">
+              <input type="radio" id="customRadio4-3" name="customRadio4" class="custom-control-input">
+              <label class="custom-control-label" for="customRadio4-3">RCI</label>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="custom-control custom-radio">
+              <input type="radio" id="customRadio4-4" name="customRadio4" class="custom-control-input">
+              <label class="custom-control-label" for="customRadio4-4">RSI</label>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="custom-control custom-radio">
+              <input type="radio" id="customRadio4-5" name="customRadio4" class="custom-control-input" checked>
+              <label class="custom-control-label" for="customRadio4-5">None</label>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary">Configuration</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="shown-chart" class="p-3 mt-2">
+  {% autoescape off %}
+  {{ plot_div }}
+  {% endautoescape %}
+
+  <div id="chart-scale">
+    <button type="button" class="btn btn-secondary btn-sm">all</button>
+    <button type="button" class="btn btn-secondary btn-sm">1 year</button>
+    <button type="button" class="btn btn-secondary btn-sm">6 months</button>
+    <button type="button" class="btn btn-secondary btn-sm">3 months</button>
+    <button type="button" class="btn btn-secondary btn-sm">2 months</button>
+    <button type="button" class="btn btn-secondary btn-sm">1 month</button>
+  </div>
+
+  <div id="obj" class="py-2 d-none" style="position:absolute;top:30%;left:60%;">
+    <p class="font-weight-bold">Stock purchase screen</p>
+    <p>position</p>
+    <p>Buying and selling</p>
+    <p>０　－　２</p>
+    <table class="table table-bordered table-sm w-100 my-0">
+      <tbody>
+        <tr>
+          <td>Selling +</td>
+          <td>Buying +</td>
+        </tr>
+        <tr>
+          <td>Selling -</td>
+          <td>Buying -</td>
+        </tr>
+      </tbody>
+    </table>
+    <p><button type="button" class="btn btn-primary btn-sm btn-block">All settlement</button></p>
+  </div>
+
+  {% autoescape off %}
+  {{ plot_div2 }}
+  {% endautoescape %}
+
+  <div id="data-shown" class="p-2">
+    <p><small>2015-05-28</small></p>
+    <p><small>closing price	<span>2117</span></small></p>
+    <p><small>Open price	<span>2148</span></small></p>
+    <p><small>Highest value	<span>2157</span></small></p>
+    <p><small>lowest price	<span>2113</span></small></p>
+  </div>
+
+</div>
+
+{% endblock %}
+
+{% block extrajs %}
+<script>
+$('#date_sample').datepicker();
+
+$('#simulation').click(function() {
+  var flag = $('#simulated').hasClass("d-none");
+  if(flag){
+    $('#simulation').text('End simulation');
+    $('#simulated').removeClass("d-none");
+    $('#obj').removeClass("d-none");
+  } else {
+    $('#simulation').text('Start simulation');
+    $('#simulated').addClass("d-none");
+    $('#obj').addClass("d-none");
+  }
+});
+</script>
+{% endblock %}
